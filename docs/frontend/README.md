@@ -15,11 +15,12 @@
 | [memory-and-cleanup.md](memory-and-cleanup.md) | GC는 도달 가능성으로 회수한다. 정리는 명시적으로 | WeakMap, `destroy`, 클린업 |
 | [weak-collections.md](weak-collections.md) | WeakSet·WeakMap — 담되 붙잡지 않는 컬렉션 | `handled`, `elToNode` |
 | [closures.md](closures.md) | 함수는 만들어진 곳의 변수를 기억한다 | `stopped`, `listen` 해제 함수, 클린업 |
+| [reference-vs-copy.md](reference-vs-copy.md) | 객체는 참조로 전달된다. 복사는 명시적으로, `...`은 얕은 복사 | `{ ...on }`, `[...children]`, 클로저의 `portal` |
 
 ## 읽는 순서 추천
 
 ```
 dom-tree → event-flow → event-object → event-delegation → component-tree-vs-dom
                                                                 ↓
-                         closures ← weak-collections ← memory-and-cleanup ← containing-block ← stacking-context
+                         reference-vs-copy ← closures ← weak-collections ← memory-and-cleanup ← containing-block ← stacking-context
 ```

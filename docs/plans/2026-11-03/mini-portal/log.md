@@ -46,3 +46,4 @@
 | 2026-11-03 | PR #1 머지 시도 | auto mode 분류기가 거부(Merge Without Review) → 우회 안 함, 사용자에게 직접 머지 요청 |
 | 2026-11-03 | 사용자 요청: WeakSet 문서 | docs/frontend/weak-collections.md 작성 |
 | 2026-11-03 | 사용자 요청: 클로저 문서 | docs/frontend/closures.md 작성 |
+| 2026-11-03 | 사용자 요청: 참조 vs 복사 문서 + Q22·Q23(중복 방지 오해 정정) | reference-vs-copy.md, 03·04 갱신 |

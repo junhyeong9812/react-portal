@@ -44,6 +44,9 @@ AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
 ```
 두 번째 테스트도 portal을 다른 노드의 DOM 안에 넣기 때문에 같은 이유로 실패한다. 복구하면 17/17 통과.
 
+### 오해 주의: "클릭 2번 → 1번 처리"가 아니다
+사용자가 두 번 클릭하면 이벤트 객체가 두 개(E1, E2) 생기므로 **둘 다 처리된다.** 막는 건 **한 번의 클릭(같은 객체)이 리스너 두 곳에서 이중 처리되는 것**뿐이다. 연타 방지는 디바운스/스로틀이라는 별개 기법.
+
 ### 왜 WeakSet인가
 - 이벤트 객체는 처리가 끝나면 필요 없다. 일반 Set이면 클릭할 때마다 쌓여서 영원히 남는다.
 - WeakSet은 이벤트 객체가 쓰이지 않게 되면 같이 사라진다. → [memory-and-cleanup](../../frontend/memory-and-cleanup.md)

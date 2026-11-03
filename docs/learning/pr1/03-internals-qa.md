@@ -160,3 +160,22 @@ n.handlers[native.type]              // ③ 받은 타입 이름으로 꺼내 �
   - nodeOf: DOM을 타서 **시작 노드 하나**를 찾음
   - dispatch 루프: 그 시작 노드부터 **논리 트리**를 탐
 - 확인법: dispatch 첫 줄에 `console.log(native.type, native.target, native.currentTarget)` → 콘솔 확인 후 삭제.
+
+## Q22. 클로저·WeakSet은 객체를 포인터로 가져오는 게 아니라 데이터를 그대로 복사해서 넣는 것 아닌가?
+
+- **정답**: 아니다. 둘 다 **참조**를 들고 있다.
+  - 클로저는 값을 찍어 두는 게 아니라 **변수 자체**를 가리킨다 → `stopPropagation()`이 바꾼 `stopped`를 루프가 본다.
+  - 객체는 변수에 넣거나 넘길 때 **참조값**이 전달된다 → 닫기 버튼의 클로저가 **진짜 그 portal 노드**를 destroy한다.
+  - WeakSet `has`는 **같은 객체인가**로 판정한다.
+- 복사는 `{ ...on }`, `[...children]`처럼 **명시적으로** 할 때만이고, 그것도 얕은 복사다. → [reference-vs-copy](../../frontend/reference-vs-copy.md)
+
+## Q23. 중복 방지(`handled`)는 native에 클릭이 2번 들어오면 1번만 처리한다는 뜻인가?
+
+- **처음 생각**: 클릭이 두 번 들어오면 한 번만 처리.
+- **정답**: 아니다. **사용자가 두 번 클릭하면 두 번 다 처리된다.** 클릭마다 브라우저가 새 이벤트 객체를 만들기 때문(E1 ≠ E2).
+  - 막는 것은 **클릭 한 번의 같은 이벤트 객체가 dispatch 리스너 두 곳에 도착하는 경우**(portal target이 루트 안 → `.mini-portal`과 `.mini-root`가 같은 경로).
+```
+클릭 1번 → E1 → dispatch ①(.mini-portal): 표시 후 처리
+              → dispatch ②(.mini-root)  : 같은 E1 → return
+```
+- "짧은 시간 연타를 한 번으로"는 별개 기법인 **디바운스/스로틀**(타이머 기반).
