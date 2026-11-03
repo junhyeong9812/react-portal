@@ -1,4 +1,4 @@
-import { createRoot, createNode, createPortal, getLayers } from '../src/index.js';
+import { createRoot, createNode, createPortal, createModal, getOpenModals } from '../src/index.js';
 
 const THEME = Symbol('theme');
 const logEl = document.getElementById('log');
@@ -59,34 +59,75 @@ createNode(actions, 'button', {
   },
 });
 
-// 2) Portal 모달 — DOM은 body로, 논리 부모는 card
+// 2) Portal 모달 — createModal: DOM은 body로, 논리 부모는 card
+//    ESC·바깥 클릭·포커스 가두기·스크롤 잠금은 라이브러리(src/modal.js)가 처리
 let depth = 0;
 function openPortalModal(parent) {
   depth += 1;
-  const portal = createPortal(parent, document.body, {
-    on: { click: () => log(`portal#${portal.depth} 핸들러`) },
+  const n = depth;
+  const modal = createModal(parent, {
+    label: `Portal 모달 #${n}`,
+    onClose: (reason) => {
+      log(`portal#${n} 닫힘 (reason: ${reason})`, 'native');
+      depth = getOpenModals().length;
+    },
   });
-  portal.depth = depth;
-  const m = buildModal(portal, { title: `Portal 모달 #${depth}` });
-  m.meta.el.textContent += ` · z-index=${portal.el.style.zIndex} · 열린 레이어 ${getLayers().length}개`;
+  modal.portal.handlers.click = () => log(`portal#${n} 핸들러`);
+  modal.overlay.el.classList.add('overlay');
+  modal.dialog.el.classList.add('modal');
 
-  createNode(m.row, 'button', {
+  createNode(modal.dialog, 'h3', { text: `Portal 모달 #${n}` });
+  createNode(modal.dialog, 'p', {
+    className: 'meta',
+    text: `inject(THEME) = "${modal.dialog.inject(THEME)}" · z-index=${modal.portal.el.style.zIndex} · 열린 모달 ${getOpenModals().length}개`,
+  });
+  createNode(modal.dialog, 'p', {
+    className: 'meta',
+    text: 'ESC 또는 어두운 배경 클릭으로 닫힘 · Tab은 이 모달 안에서만 순환 · 배경 스크롤 잠김',
+  });
+  const row = createNode(modal.dialog, 'div', { className: 'actions' });
+
+  createNode(row, 'button', {
     text: '안쪽 버튼 클릭',
-    on: { click: () => log(`button 핸들러 (portal#${portal.depth} 안)`) },
+    on: { click: () => log(`button 핸들러 (portal#${n} 안)`) },
   });
-  createNode(m.row, 'button', {
+  const menuButton = createNode(row, 'button', {
+    text: '메뉴 열기',
+    on: { click: (e) => { e.stopPropagation(); toggleMenu(menuButton); } },
+  });
+  createNode(row, 'button', {
     text: '모달 위에 또 열기',
-    on: { click: (e) => { e.stopPropagation(); openPortalModal(portal); } },
+    on: { click: (e) => { e.stopPropagation(); openPortalModal(modal.dialog); } },
   });
-  createNode(m.row, 'button', {
+  createNode(row, 'button', {
     className: 'primary',
     text: '닫기',
+    on: { click: (e) => { e.stopPropagation(); modal.close(); } },
+  });
+}
+
+// 3) 모달 안의 드롭다운 메뉴 — 비모달 portal. DOM은 body(= dialog 밖)지만 논리적으로는 dialog의 자손.
+//    그래서 메뉴를 눌러도 "바깥 클릭"이 아니다 (DOM contains로 판정했다면 모달이 닫혀 버림).
+function toggleMenu(anchor) {
+  if (anchor.menu) {
+    anchor.menu.destroy();
+    anchor.menu = null;
+    return;
+  }
+  const menu = createPortal(anchor);
+  anchor.menu = menu;
+  menu.onCleanup(() => (anchor.menu = null));
+
+  const rect = anchor.el.getBoundingClientRect();
+  const box = createNode(menu, 'div', { className: 'menu' });
+  box.el.style.cssText = `position:fixed; top:${rect.bottom + 4}px; left:${rect.left}px`;
+  createNode(box, 'button', {
+    text: '메뉴 항목',
     on: {
       click: (e) => {
         e.stopPropagation();
-        log(`portal#${portal.depth} destroy → 그 위에 연 portal도 함께 정리`, 'native');
-        portal.destroy();
-        depth = getLayers().length;
+        log('메뉴 항목 클릭 — DOM상 dialog 밖이지만 논리 자손이라 모달은 안 닫힘', 'native');
+        menu.destroy();
       },
     },
   });

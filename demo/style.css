@@ -101,3 +101,16 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 #log { padding-left: 20px; margin: 8px 0 0; font-size: 13px; max-height: 420px; overflow: auto; }
 #log li.native { color: var(--muted); }
 #log li.sep { list-style: none; margin-left: -20px; border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
+
+/* 모달 안 드롭다운 메뉴 (비모달 portal) */
+.menu {
+  min-width: 140px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.menu button { width: 100%; text-align: left; border: 0; }
+.menu button:hover { background: #eef1f7; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
