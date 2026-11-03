@@ -68,6 +68,13 @@ describe('I2 논리 버블링', () => {
   });
 });
 
+test('위임 대상이 아닌 이벤트 타입을 등록하면 경고한다(무음 실패 방지)', () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  createNode(mountRoot(), 'div', { on: { mouseover: () => {} } });
+  expect(warn).toHaveBeenCalledWith(expect.stringContaining('mouseover'));
+  warn.mockRestore();
+});
+
 describe('I3 stopPropagation', () => {
   test('호출한 지점 위의 논리 조상 핸들러는 호출되지 않는다', () => {
     const r = mountRoot();

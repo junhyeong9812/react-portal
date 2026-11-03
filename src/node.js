@@ -1,4 +1,5 @@
 import { register, unregister } from './registry.js';
+import { EVENT_TYPES } from './events.js';
 
 // 논리 트리의 노드(= React의 컴포넌트 인스턴스에 해당).
 // parent는 "논리 부모", domParent는 "실제로 DOM이 붙는 곳".
@@ -12,6 +13,14 @@ export class Node {
     this.contexts = new Map();
     this.cleanups = [];
     this.destroyed = false;
+
+    // ponytail: 위임 대상은 EVENT_TYPES뿐. 그 밖의 타입은 조용히 무시되지 않도록 경고한다.
+    // 필요하면 events.js의 EVENT_TYPES에 추가.
+    for (const type of Object.keys(this.handlers)) {
+      if (!EVENT_TYPES.includes(type)) {
+        console.warn(`[mini-portal] "${type}" 이벤트는 위임 대상이 아니라 호출되지 않습니다.`);
+      }
+    }
 
     register(el, this);
     if (parent) parent.children.add(this);
