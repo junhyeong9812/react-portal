@@ -2,23 +2,20 @@
 
 ## 기준
 
-- 마지막 갱신: 2026-11-03 · 직전 완료 작업: `docs/plans/2026-11-03/mini-portal/` · 기준 커밋: dcbb229 (feat/mini-portal) · 병합 상태: 대기
+- 마지막 갱신: 2026-11-03 · 직전 완료 작업: `docs/plans/2026-11-03/readme/` · 기준 커밋: e059634 (main, PR #1 머지) · 병합 상태: PR #1 완료
 
 ## 다음 작업 후보 (우선순위순)
 
-### N1. React createPortal 비교 (3단계) — 우선순위: 중간 · 인터뷰에서 범위 밖으로 미룬 항목
+### N1. 모달 실무 기능 — 우선순위: 높음 · 명세 합의 완료 (`docs/plans/2026-11-03/modal-features/`)
 
-- **왜 다음인가**: 1·2단계 불변식 I1~I6이 테스트로 고정됨 → 같은 시나리오를 React로 재현해 대조 가능.
+- **왜 다음인가**: Portal로 모달을 만들 때 두 트리가 갈라져서 생기는 문제(바깥 클릭·ESC·포커스·스크롤)를 응용.
+- **착수 전 확인할 것**: 명세 load-bearing 가정 A1(document 캡처 리스너 + 여는 클릭의 pointerdown 오인 없음).
+
+### N2. React createPortal 비교 (가볍게) — 우선순위: 중간 · 명세 합의 완료 (`docs/plans/2026-11-03/react-compare/`)
+
+- **왜 다음인가**: 미니 구현의 불변식을 React 실제 동작과 대조. `createRoot` 가짜 portal로 Context·이벤트 끊김 확인.
 - **발생 가능한 문제**: 미니 구현은 portal 컨테이너마다 리스너를 달고 `handled` WeakSet으로 중복을 막는다(`src/events.js`). React와 이벤트 순서·네이티브 stopPropagation 효과를 비교할 때 이 차이가 결과에 드러난다.
-- **방법론 선택지**:
-
-| 방안 | 요지 | 비용 | 실패 모드 | 맞는 조건 |
-|------|------|------|----------|----------|
-| A | 같은 repo에 `react/` 데모 추가(vite multi-page) | 낮음 | 의존성 섞임 | 비교를 한 화면에서 보고 싶을 때 |
-| B | `createRoot`로 흉내 낸 가짜 portal vs `createPortal` 대조 | 중간 | — | Context 끊김을 체감하고 싶을 때 |
-
-- **권장 대처**: A 위에 B 시나리오를 얹는다.
-- **착수 전 확인할 것**: React 의존성 추가 허용 여부(현재 spec 금지영역).
+- **착수 전 확인할 것**: Vite 8 멀티 페이지 설정 키(명세 A1).
 
 ## 보류·이월
 
@@ -26,4 +23,5 @@
 
 ## 완료 이력
 
-- 완료 → `docs/plans/2026-11-03/mini-portal/`
+- 완료 → `docs/plans/2026-11-03/readme/`
+- 완료 → `docs/plans/2026-11-03/mini-portal/` (PR #1 머지 e059634)
