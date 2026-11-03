@@ -1,0 +1,17 @@
+{
+  "name": "react-portal",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Mini Portal: React createPortal의 동작 원리를 순수 JS로 흉내 낸 학습용 구현",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "vite": "^8.3.5",
+    "vitest": "^4.1.12"
+  }
+}
