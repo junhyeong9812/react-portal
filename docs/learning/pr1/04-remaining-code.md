@@ -83,7 +83,7 @@ const event = {
 핵심은 두 번째 줄이다. 우리 루프(`for (n = start; n && !stopped; n = n.parent)`)는 브라우저가 아니라 우리가 돌리는 것이라서, 브라우저의 stopPropagation으로는 못 멈춘다. 그래서 `stopped` 플래그가 필요하다.
 
 ### stopped가 지역 변수인 이유
-`dispatch`가 불릴 때마다 새로 생긴다 → 이번 클릭에서 멈춘 것이 다음 클릭에 영향을 주지 않는다. `stopPropagation` 메서드가 이 변수를 바꿀 수 있는 건 **클로저** 덕분이다(같은 함수 안에서 만들어진 메서드라서 바깥 변수에 접근 가능).
+`dispatch`가 불릴 때마다 새로 생긴다 → 이번 클릭에서 멈춘 것이 다음 클릭에 영향을 주지 않는다. `stopPropagation` 메서드가 이 변수를 바꿀 수 있는 건 **클로저** 덕분이다(같은 함수 안에서 만들어진 메서드라서 바깥 변수에 접근 가능). → [closures](../../frontend/closures.md)
 
 ### currentTarget 갱신 (`events.js:37`)
 ```js

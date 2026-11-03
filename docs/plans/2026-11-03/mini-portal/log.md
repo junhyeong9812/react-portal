@@ -45,3 +45,4 @@
 | 2026-11-03 | 학습문서 04 작성 | 변이 점검: handled 가드 제거 시 2개 실패(2회 호출) → 복구 17/17 |
 | 2026-11-03 | PR #1 머지 시도 | auto mode 분류기가 거부(Merge Without Review) → 우회 안 함, 사용자에게 직접 머지 요청 |
 | 2026-11-03 | 사용자 요청: WeakSet 문서 | docs/frontend/weak-collections.md 작성 |
+| 2026-11-03 | 사용자 요청: 클로저 문서 | docs/frontend/closures.md 작성 |
