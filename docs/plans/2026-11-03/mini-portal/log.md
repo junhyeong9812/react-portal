@@ -12,6 +12,8 @@
 | 2026-11-03 | 반증 점검: EVENT_TYPES 밖 핸들러가 무음으로 미호출 | Node 생성 시 console.warn + 테스트 추가. 17/17 green, build OK |
 | 2026-11-03 | 머지 전 안전선 | ①스모크(jsdom 데모+dev 200) ②테스트 17/17+변이 점검 ③diff self-review(의도 외 변경 없음) ④rollback=브랜치 폐기 ⑤public contract 없음(신규) ⑥반증: 미지원 이벤트 무음 실패 → 수정 |
 | 2026-11-03 | 리뷰 | stakes 낮음 → 셀프체크(강도표). 듀얼 리뷰 비대상 |
+| 2026-11-03 | 브랜치 push + PR | https://github.com/junhyeong9812/react-portal/pull/1 (base main) |
+| 2026-11-03 | 아카이브 | CS 이슈 1건(fixed 자손·overflow·transform containing block). 원 식별자: react-portal, demo/style.css .card. 기존 카드 issue/typescript/react/css-containing-context ⓑ 동일 원리·동일 해결(body 포털) — 무변경, 커밋 없음 |
 
 ## 리뷰 ledger (中↑ — 듀얼 리뷰가 돈 작업 필수)
 
@@ -38,4 +40,4 @@
 
 - `src/portal.js`: `new Node({ el, parent, domParent: target, on })` — 논리 부모와 DOM 부모의 분리가 Portal 전체. portal 컨테이너는 루트 DOM 밖이라 자체 위임 리스너(`portal.onCleanup(listen(el))`)가 필요 — React 17+가 portal 컨테이너에도 리스너를 다는 것과 같은 이유.
 - **배운 것**: `position: fixed` 자손은 조상의 `overflow: hidden`에 잘리지 않는다 — 조상에 `transform`이 있을 때만 그 조상이 containing block이 되어 잘린다(데모 정정 근거).
-- **남은 것**: 브랜치 push·PR 여부 사용자 확인 대기. 3단계(React createPortal 비교)는 범위 밖.
+- **남은 것**: PR #1 머지 대기. 3단계(React createPortal 비교)는 범위 밖.
