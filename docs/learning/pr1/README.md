@@ -8,6 +8,7 @@
 | [01-my-understanding.md](01-my-understanding.md) | 내가 머릿속에 정리한 전체 구조 (한 장 요약) | 복습할 때 가장 먼저 |
 | [02-concepts.md](02-concepts.md) | 몰랐던 개념 사전 (DOM·이벤트·JS 문법·CSS) | 용어가 막힐 때 |
 | [03-internals-qa.md](03-internals-qa.md) | 내부 동작 질문과 답 (질문한 순서대로, 헷갈렸던 지점 포함) | 같은 곳에서 다시 막힐 때 |
+| [04-remaining-code.md](04-remaining-code.md) | 중복 방지·합성 이벤트·레이어 스택·테스트 읽는 법 | 01~03 다음 |
 
 ## 코드 읽는 순서 (다시 볼 때)
 
@@ -25,9 +26,7 @@
 
 ## 아직 안 본 것
 
-- `src/events.js:9-31` — 중복 방지(`handled` WeakSet), 우리판 이벤트 객체와 `stopPropagation`
-- `src/layers.js` 코드 자체 (개념만 봄)
-- `test/` 테스트 코드
+- 없음 — 남았던 `events.js:9-31`, `layers.js`, `test/`는 [04](04-remaining-code.md)에서 정리
 
 ## 관련 주제 문서
 

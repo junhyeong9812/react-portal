@@ -41,3 +41,5 @@
 - `src/portal.js`: `new Node({ el, parent, domParent: target, on })` — 논리 부모와 DOM 부모의 분리가 Portal 전체. portal 컨테이너는 루트 DOM 밖이라 자체 위임 리스너(`portal.onCleanup(listen(el))`)가 필요 — React 17+가 portal 컨테이너에도 리스너를 다는 것과 같은 이유.
 - **배운 것**: `position: fixed` 자손은 조상의 `overflow: hidden`에 잘리지 않는다 — 조상에 `transform`이 있을 때만 그 조상이 containing block이 되어 잘린다(데모 정정 근거).
 - **남은 것**: PR #1 머지 대기. 3단계(React createPortal 비교)는 범위 밖.
+| 2026-11-03 | 사용자 지시: .idea/ gitignore, 남은 코드 학습 문서, PR 머지 | .gitignore 커밋 |
+| 2026-11-03 | 학습문서 04 작성 | 변이 점검: handled 가드 제거 시 2개 실패(2회 호출) → 복구 17/17 |
