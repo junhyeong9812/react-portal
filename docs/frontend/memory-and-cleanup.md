@@ -29,6 +29,8 @@ el = null;            // 이제 아무도 참조 안 함 → 회수 대상
 
 ## WeakMap / WeakSet
 
+> 자세히: [weak-collections.md](weak-collections.md)
+
 - 키를 **약하게** 참조한다. 키 객체가 다른 곳에서 안 쓰이면, WeakMap에 들어 있어도 회수된다.
 - 키는 객체만 가능하고, 순회(`forEach`, `size`)가 안 된다. 언제 사라질지 모르기 때문.
 - 용도: **객체에 부가 정보를 붙이되, 그 객체의 수명에는 관여하지 않을 때.**

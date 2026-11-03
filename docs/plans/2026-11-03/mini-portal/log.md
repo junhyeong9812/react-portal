@@ -43,3 +43,5 @@
 - **남은 것**: PR #1 머지 대기. 3단계(React createPortal 비교)는 범위 밖.
 | 2026-11-03 | 사용자 지시: .idea/ gitignore, 남은 코드 학습 문서, PR 머지 | .gitignore 커밋 |
 | 2026-11-03 | 학습문서 04 작성 | 변이 점검: handled 가드 제거 시 2개 실패(2회 호출) → 복구 17/17 |
+| 2026-11-03 | PR #1 머지 시도 | auto mode 분류기가 거부(Merge Without Review) → 우회 안 함, 사용자에게 직접 머지 요청 |
+| 2026-11-03 | 사용자 요청: WeakSet 문서 | docs/frontend/weak-collections.md 작성 |

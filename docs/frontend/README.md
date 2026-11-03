@@ -13,11 +13,12 @@
 | [stacking-context.md](stacking-context.md) | z-index는 같은 stacking context 안에서만 비교된다 | 카드 함정, 레이어 스택 |
 | [containing-block.md](containing-block.md) | 위치의 기준 상자와 overflow 클리핑. fixed + transform 함정 | 데모 카드 `transform` |
 | [memory-and-cleanup.md](memory-and-cleanup.md) | GC는 도달 가능성으로 회수한다. 정리는 명시적으로 | WeakMap, `destroy`, 클린업 |
+| [weak-collections.md](weak-collections.md) | WeakSet·WeakMap — 담되 붙잡지 않는 컬렉션 | `handled`, `elToNode` |
 
 ## 읽는 순서 추천
 
 ```
 dom-tree → event-flow → event-object → event-delegation → component-tree-vs-dom
                                                                 ↓
-                         memory-and-cleanup ← containing-block ← stacking-context
+                         weak-collections ← memory-and-cleanup ← containing-block ← stacking-context
 ```
