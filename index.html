@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Portal 데모</title>
+    <link rel="stylesheet" href="/demo/style.css" />
+  </head>
+  <body>
+    <header class="topbar">상단 헤더 (position: sticky · z-index: 2)</header>
+    <main class="layout">
+      <section>
+        <h1>Mini Portal</h1>
+        <p class="lead">
+          아래 카드는 <code>position: relative; z-index: 1; overflow: hidden; transform</code>으로
+          stacking context를 만들고, fixed 자식까지 카드 안에 가둡니다. 같은 모달을 <b>일반 자식</b>과 <b>Portal</b>로 열어 비교해 보세요.
+        </p>
+        <div id="app"></div>
+      </section>
+      <aside class="log">
+        <div class="log-head">
+          <h2>이벤트 로그</h2>
+          <button id="clear-log" type="button">지우기</button>
+        </div>
+        <ol id="log"></ol>
+      </aside>
+    </main>
+    <script type="module" src="/demo/main.js"></script>
+  </body>
+</html>
