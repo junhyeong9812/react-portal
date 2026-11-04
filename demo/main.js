@@ -1,4 +1,4 @@
-import { createRoot, createNode, createPortal, createModal, getOpenModals } from '../src/index.js';
+import { createRoot, createNode, createModal, createMenu, getOpenModals } from '../src/index.js';
 import { bugs, anyBug, createNaiveModal, getNaiveOpen } from './naive-modal.js';
 
 const THEME = Symbol('theme');
@@ -90,7 +90,7 @@ function openPortalModal(parent) {
     className: naive ? 'meta warn' : 'meta',
     text: naive
       ? `⚠ naive 모드: ${Object.keys(bugs).filter((k) => bugs[k]).map((k) => BUG_LABELS[k]).join(' · ')}`
-      : 'ESC 또는 어두운 배경 클릭으로 닫힘 · Tab은 이 모달 안에서만 순환 · 배경 스크롤 잠김',
+      : 'ESC 또는 어두운 배경 클릭으로 닫힘 · Tab은 이 모달 안에서만 순환 · 배경 스크롤 잠김 · 메뉴는 ↑↓·ESC·Tab',
   });
   const row = createNode(modal.dialog, 'div', { className: 'actions' });
 
@@ -113,31 +113,28 @@ function openPortalModal(parent) {
   });
 }
 
-// 3) 모달 안의 드롭다운 메뉴 — 비모달 portal. DOM은 body(= dialog 밖)지만 논리적으로는 dialog의 자손.
-//    그래서 메뉴를 눌러도 "바깥 클릭"이 아니다 (DOM contains로 판정했다면 모달이 닫혀 버림).
+// 3) 모달 안의 드롭다운 메뉴 — createMenu(비모달 portal + 오버레이 스택).
+//    DOM은 body(= dialog 밖)지만 논리적으로는 dialog의 자손 → 메뉴를 눌러도 모달의 "바깥 클릭"이 아니다.
+//    열리면 포커스가 메뉴로 가고 ↑↓로 이동, ESC는 메뉴만 닫고, Tab은 메뉴를 닫고 모달 안에서 다음으로.
 function toggleMenu(anchor) {
   if (anchor.menu) {
-    anchor.menu.destroy();
-    anchor.menu = null;
+    anchor.menu.close();
     return;
   }
-  const menu = createPortal(anchor);
-  anchor.menu = menu;
-  menu.onCleanup(() => (anchor.menu = null));
-
-  const rect = anchor.el.getBoundingClientRect();
-  const box = createNode(menu, 'div', { className: 'menu' });
-  box.el.style.cssText = `position:fixed; top:${rect.bottom + 4}px; left:${rect.left}px`;
-  createNode(box, 'button', {
-    text: '메뉴 항목',
-    on: {
-      click: (e) => {
-        e.stopPropagation();
-        log('메뉴 항목 클릭 — 모달 유지됨 (메뉴는 DOM상 dialog 밖, 논리상 dialog의 자손)', 'native');
-        menu.destroy();
-      },
+  const picked = (label) => () =>
+    log(`${label} 선택 — 모달 유지됨 (메뉴는 DOM상 dialog 밖, 논리상 dialog의 자손)`, 'native');
+  anchor.menu = createMenu(anchor, {
+    items: [
+      { label: '메뉴 항목', onSelect: picked('메뉴 항목') },
+      { label: '항목 2', onSelect: picked('항목 2') },
+      { label: '항목 3', onSelect: picked('항목 3') },
+    ],
+    onClose: (reason) => {
+      anchor.menu = null;
+      log(`메뉴 닫힘 (reason: ${reason})`, 'native');
     },
   });
+  anchor.menu.portal.el.querySelector('.mini-menu').classList.add('menu');
 }
 
 createNode(actions, 'button', {
