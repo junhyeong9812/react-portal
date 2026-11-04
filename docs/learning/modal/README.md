@@ -131,7 +131,7 @@ portal.onCleanup(() => {
 
 | 토글 | 해 볼 것 | 겪는 증상 | 원인 (naive 코드) | 라이브러리의 해결 |
 |---|---|---|---|---|
-| N1 | 모달 → 메뉴 열기 → 메뉴 항목 | 모달이 닫힘 | `dialog.el.contains(e.target)` — 메뉴는 DOM상 body | 논리 자손 판정 (§1) |
+| N1 | 모달 → 메뉴 열기 → 메뉴 항목 | 모달이 닫힘 | `dialog.el.contains(e.target)` — 메뉴는 DOM상 body | 논리 자손 판정 (§1) → [자세히](n1-outside-click.md) |
 | N2 | Portal 모달 열기 | 열자마자 닫힘 | `document`에 **click 버블** 리스너 → 여는 click이 이어서 document에 도착 | `pointerdown` 캡처 (§1) |
 | N3 | 또 열기 → ESC / Tab 연타 | 전부 닫힘 / 뒤 페이지로 탈출 | 모달마다 자기 ESC 리스너, 맨 위 확인 없음, Tab 가두기 없음 | 모달 스택 + `trapTab` (§2·3) |
 | N4 | 또 열기 → 위 모달 닫기 → 휠 | 배경이 스크롤됨 | 닫을 때 무조건 `overflow = ''` | 참조 카운트 (§4) |
