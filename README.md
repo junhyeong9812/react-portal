@@ -52,6 +52,7 @@ npm run build   # dist/
 5. 아래 모달 **닫기**: 위의 모달도 함께 정리됩니다(논리 자식이므로).
 6. **ESC**·어두운 배경 클릭으로 닫기, **Tab**이 모달 안에서만 순환, 닫으면 포커스가 열기 버튼으로 복귀합니다.
 7. 모달 안 **메뉴 열기 → 메뉴 항목**: 메뉴는 DOM상 모달 밖(body)에 있지만 눌러도 모달이 닫히지 않습니다(논리 트리 판정).
+8. 메뉴가 열리면 포커스가 첫 항목으로 갑니다. **↑↓**로 이동, **ESC**는 메뉴만 닫고(모달 유지), **Tab**은 메뉴를 닫고 모달 안에서 다음 버튼으로 갑니다.
 
 ### React 비교 페이지 (`/react.html`)
 
@@ -102,6 +103,7 @@ createNode(modal.dialog, 'button', { text: '닫기', on: { click: () => modal.cl
 | `getLayers()` | 열린 portal 컨테이너 목록(복사본) |
 | `createModal(parent, { target, onClose, initialFocus, label }?)` | `{ portal, overlay, dialog, close() }`. 바깥 클릭·ESC·포커스·스크롤 잠금 포함 |
 | `getOpenModals()` | 열린 모달 목록(복사본, 열린 순서) |
+| `createMenu(anchor, { items, onClose }?)` | 드롭다운 메뉴(비모달 portal). `items: [{ label, onSelect }]`. 열면 첫 항목 포커스, ↑↓ 이동, ESC는 메뉴만 닫음, Tab은 메뉴를 닫고 모달 Tab 가두기로 이어짐 |
 
 핸들러가 받는 이벤트 객체는 `{ type, target, currentTarget, nativeEvent, stopPropagation(), preventDefault() }`이며, `target`·`currentTarget`은 DOM 요소가 아니라 **노드**입니다. `stopPropagation()`은 논리 버블링과 네이티브 버블링을 함께 멈춥니다.
 
@@ -116,6 +118,8 @@ src/
   registry.js   DOM 요소 → 노드 매핑 (WeakMap)
   layers.js     z-index 레이어 스택
   modal.js      createModal — 바깥 클릭·ESC·포커스 가두기·스크롤 잠금
+  menu.js       createMenu — 모달 안 드롭다운 메뉴 키보드(↑↓·ESC·Tab)
+  overlay-stack.js  모달·메뉴 공용 오버레이 스택 — document 리스너 하나가 맨 위 오버레이에만 키·바깥 클릭 전달
   index.js      공개 API
 test/           불변식별 테스트 (DOM 이동, 논리 버블링, stopPropagation, 생명주기, Context, 레이어, 모달, React 비교)
 demo/, index.html   stacking context 함정 vs Portal 대조 데모

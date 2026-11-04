@@ -1,9 +1,9 @@
 import { createNode } from './node.js';
 import { createPortal } from './portal.js';
-import { nodeOf } from './registry.js';
+import { pushOverlay, removeOverlay, getOverlays, isLogicalDescendant } from './overlay-stack.js';
 
-// 열린 모달 스택(열린 순서). 맨 뒤가 맨 위 — ESC·바깥 클릭·포커스 가두기는 맨 위에만 반응한다.
-const stack = [];
+// 모달은 오버레이 스택(overlay-stack.js)에 올라간다. 메뉴 같은 다른 오버레이와 같은 스택이라,
+// 모달 위에 메뉴가 열려 있으면 ESC·Tab·바깥 클릭은 메뉴가 먼저 받는다.
 
 // ── 배경 스크롤 잠금 (참조 카운트) ──
 let lockCount = 0;
@@ -20,29 +20,9 @@ function unlockScroll() {
   if (--lockCount === 0) document.body.style.overflow = savedOverflow;
 }
 
-// ── 논리 트리 판정 ──
-function isLogicalDescendant(node, ancestor) {
-  for (let n = node; n; n = n.parent) if (n === ancestor) return true;
-  return false;
-}
-
-const top = () => stack[stack.length - 1];
-
-// ── document 리스너 (모달이 1개 이상일 때만 붙어 있음) ──
-// 캡처 단계로 단다: 앱 코드가 stopPropagation해도 먼저 받는다.
-// pointerdown을 쓰는 이유: 모달을 "여는" 클릭의 pointerdown은 모달이 생기기 전에 이미 지나갔으므로
-// 여는 클릭이 곧바로 "바깥 클릭"으로 오인되지 않는다(click을 쓰면 오인된다).
-function onPointerDown(e) {
-  const modal = top();
-  if (!modal) return;
-  const node = nodeOf(e.target);
-  // DOM의 contains가 아니라 논리 트리로 판정 → dialog 안에서 연 portal(DOM은 body)도 "안쪽"
-  if (node && isLogicalDescendant(node, modal.dialog)) return;
-  modal.close('outside');
-}
-
-// ponytail: 포커스 순환 범위는 dialog의 DOM 서브트리뿐. dialog 안에서 연 비모달 portal(드롭다운 등)의
-// 포커스 요소는 Tab 순환에 포함되지 않는다. 필요하면 논리 자손 portal의 el까지 모아 정렬하도록 확장.
+// 포커스 순환 범위는 dialog의 DOM 서브트리(Tab 순서는 DOM 순서를 따르므로).
+// dialog 안에서 연 메뉴(portal — DOM은 dialog 밖)는 순환에 넣지 않는다. 대신 메뉴가 열리면
+// 포커스가 메뉴 안으로 가고, 메뉴가 자기 키(↑↓·ESC·Tab)를 처리한다(menu.js).
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
   'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -75,27 +55,6 @@ function trapTab(e, modal) {
   }
 }
 
-function onKeyDown(e) {
-  const modal = top();
-  if (!modal) return;
-  if (e.key === 'Escape') {
-    e.preventDefault();
-    modal.close('escape');
-  } else if (e.key === 'Tab') {
-    trapTab(e, modal);
-  }
-}
-
-function attachDocument() {
-  document.addEventListener('pointerdown', onPointerDown, true);
-  document.addEventListener('keydown', onKeyDown, true);
-}
-
-function detachDocument() {
-  document.removeEventListener('pointerdown', onPointerDown, true);
-  document.removeEventListener('keydown', onKeyDown, true);
-}
-
 // 모달: portal → overlay → dialog. 콘텐츠는 반환된 dialog 노드 아래에 createNode로 붙인다.
 // onClose(reason): 'outside' | 'escape' | 'close' | 'destroy'(논리 부모가 destroy됨)
 export function createModal(parent, { target, onClose, initialFocus, label } = {}) {
@@ -123,15 +82,33 @@ export function createModal(parent, { target, onClose, initialFocus, label } = {
     },
   };
 
-  stack.push(modal);
-  if (stack.length === 1) attachDocument();
+  // 오버레이 스택에 올릴 항목: 맨 위일 때만 불린다.
+  const entry = {
+    kind: 'modal',
+    modal,
+    onPointerDown(e, node) {
+      // DOM의 contains가 아니라 논리 트리로 판정 → dialog 안에서 연 portal(DOM은 body)도 "안쪽"
+      if (node && isLogicalDescendant(node, dialog)) return;
+      modal.close('outside');
+    },
+    onKey(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        modal.close('escape');
+      } else if (e.key === 'Tab') {
+        trapTab(e, modal);
+      }
+      return false;
+    },
+  };
+
+  pushOverlay(entry);
   lockScroll();
 
   // 획득한 자원의 해제를 portal 클린업에 예약 → close()든 논리 부모 destroy든 같은 경로로 해제(M5)
   portal.onCleanup(() => {
     closed = true;
-    stack.splice(stack.indexOf(modal), 1);
-    if (stack.length === 0) detachDocument();
+    removeOverlay(entry);
     unlockScroll();
     if (previousFocus?.isConnected) previousFocus.focus();
     onClose?.(reason);
@@ -148,5 +125,7 @@ export function createModal(parent, { target, onClose, initialFocus, label } = {
 }
 
 export function getOpenModals() {
-  return [...stack];
+  return getOverlays()
+    .filter((o) => o.kind === 'modal')
+    .map((o) => o.modal);
 }
