@@ -12,6 +12,7 @@
 | [event-delegation.md](event-delegation.md) | 상위 하나가 받아서 나눠 준다. React의 이벤트 시스템 | `listen` + `dispatch` (단계 2) |
 | [component-tree-vs-dom.md](component-tree-vs-dom.md) | 프레임워크는 DOM과 별개의 논리 트리를 갖는다. Portal은 둘을 가른다 | `node.parent` vs `el.parentNode` |
 | [stacking-context.md](stacking-context.md) | z-index는 같은 stacking context 안에서만 비교된다 | 카드 함정, 레이어 스택 |
+| [overflow.md](overflow.md) | 넘치는 내용 처리. body hidden → 뷰포트 스크롤 막기 | 카드 클리핑, 모달 스크롤 잠금 |
 | [containing-block.md](containing-block.md) | 위치의 기준 상자와 overflow 클리핑. fixed + transform 함정 | 데모 카드 `transform` |
 | [memory-and-cleanup.md](memory-and-cleanup.md) | GC는 도달 가능성으로 회수한다. 정리는 명시적으로 | WeakMap, `destroy`, 클린업 |
 | [weak-collections.md](weak-collections.md) | WeakSet·WeakMap — 담되 붙잡지 않는 컬렉션 | `handled`, `elToNode` |
@@ -23,5 +24,5 @@
 ```
 dom-tree → event-flow → event-capture → event-object → event-delegation → component-tree-vs-dom
                                                                 ↓
-                         reference-vs-copy ← closures ← weak-collections ← memory-and-cleanup ← containing-block ← stacking-context
+                         reference-vs-copy ← closures ← weak-collections ← memory-and-cleanup ← containing-block ← overflow ← stacking-context
 ```

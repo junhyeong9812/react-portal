@@ -17,6 +17,8 @@ document.body.style.overflow = 'hidden';   // 잠금: 넘치는 내용을 숨김
 document.body.style.overflow = saved;      // 해제: 원래 값으로
 ```
 
+`overflow` 값과 body → 뷰포트 전파 규칙은 [overflow](../../frontend/overflow.md).
+
 ## 문제: 잠금은 하나인데 모달은 여러 개
 
 `body.style.overflow`는 **값이 하나뿐인 공유 자원**이다. 모달이 여러 개 열리면 여러 모달이 **같은 자원 하나**를 잠그고 푼다.
