@@ -2,6 +2,22 @@
 
 > **한 줄**: z-index는 전역 숫자 경쟁이 아니다. **같은 stacking context 안에서만** 비교된다. 부모가 stacking context를 만들면, 자식의 z-index가 아무리 커도 부모 밖의 요소를 이길 수 없다.
 
+## 이해의 흐름 — 처음 질문에서 시작하기
+
+> 전체 Q&A: [03-internals-qa Q1](../learning/pr1/03-internals-qa.md)
+
+### "Portal은 z-index를 활용하는 기능 같은데?"
+
+```text
+처음 그린 그림                         실제 — 순서가 반대
+Portal = z-index를 크게 줘서           ① z-index만으로는 못 이김 (부모 층에 갇힘)
+         맨 위로 올리는 기능               .card(z:1) 층 안의 모달(z:9999) < header(z:2)
+                                       ② 그래서 DOM을 body로 옮겨 층을 탈출 (Portal)
+                                       ③ 옮긴 뒤, body 최상위에서 z-index로 순서 정리 (layers.js)
+```
+
+**Portal은 z-index를 쓰는 기능이 아니라, z-index만으로는 안 되는 문제를 푸는 기능이다.** z-index는 옮긴 **다음** 단계에서 쓴다.
+
 ## 브라우저가 실제로 하는 일
 
 화면을 그릴 때 브라우저는 요소들을 **층(stacking context)** 단위로 묶고, 층 안에서 순서를 정한 뒤, 층 자체를 한 덩어리로 부모 층에 끼워 넣는다.

@@ -2,6 +2,51 @@
 
 > **한 줄**: 요소마다 리스너를 달지 않고 **상위 컨테이너 하나**에 리스너를 달아, 버블링으로 올라온 이벤트를 받아서 해당 요소의 처리로 나눠 주는 방식. React의 이벤트 시스템이 이렇게 동작한다.
 
+## 이해의 흐름 — 헷갈렸던 지점에서 시작하기
+
+> 전체 Q&A: [03-internals-qa Q15·Q17~Q20](../learning/pr1/03-internals-qa.md)
+
+### ① "`createNode(… on: { click })`에서 클릭 이벤트가 등록되는 거지?"
+
+**등록이 두 종류다.** 이 구분이 이벤트 위임 전체를 푸는 열쇠였다.
+
+```text
+                     무엇을          어디에                    언제
+브라우저 리스너        dispatch        .mini-root / .mini-portal   root 생성 1번, portal 열 때마다
+  (addEventListener)                  "요소"에                    (listen → events.js:45)
+
+우리 핸들러           on의 함수        노드 "객체"의 handlers      모든 createNode
+  (메모만 해 둠)                       필드에                     (node.js:12)
+
+버튼 <button> 자체에는 브라우저 리스너가 하나도 없다.
+```
+
+### ② "그럼 dispatch는 뭐야?"
+
+```text
+브라우저 ──호출──▶ dispatch(native)    ← 브라우저 입장: 평범한 리스너 하나
+                      │
+                      ├ nodeOf(native.target)       어느 노드에서 일어났나
+                      └ for (n = start; n; n = n.parent)
+                          n.handlers[native.type]?.(event)   메모해 둔 함수를 꺼내 실행
+
+= 브라우저와 논리 트리 사이의 "교환원"
+```
+
+### ③ "`'click'` 하나로 어떻게 이어지는 거야?"
+
+```text
+EVENT_TYPES = ['click', …]        ① 브라우저에 "이 타입 오면 알려줘" (listen이 등록)
+on: { click: fn }                 ② key로 동작 매핑 → node.handlers
+n.handlers[native.type]           ③ 받은 이벤트의 type('click')으로 꺼내 실행
+
+①과 ②의 이름이 안 맞으면(예: mouseover) ③까지 못 감 → 생성자 경고가 잡는다
+```
+
+### ④ "portal 리스너 등록 코드는 main.js 어디 있어?"
+
+**main.js에는 안 보인다.** `createPortal` 안(`portal.js` `portal.onCleanup(listen(el))`)에 숨어 있다 — 쓰는 쪽은 `createPortal`만 부르면 된다(React의 `createPortal`과 같은 감춤).
+
 ## 왜 쓰나
 
 | 요소마다 리스너 | 위임 |

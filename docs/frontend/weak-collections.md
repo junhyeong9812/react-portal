@@ -2,6 +2,35 @@
 
 > **한 줄**: 객체를 담되 **그 객체를 붙잡지 않는** 컬렉션. 담긴 객체가 다른 곳에서 더 이상 쓰이지 않으면, 컬렉션 안에 있어도 GC가 회수할 수 있다. "이 객체에 표시(또는 부가 정보)를 붙이되, 수명에는 관여하지 않겠다"는 용도.
 
+## 이해의 흐름 — 헷갈렸던 지점에서 시작하기
+
+> 전체 Q&A: [03-internals-qa Q22·Q23](../learning/pr1/03-internals-qa.md)
+
+### ① "중복 방지(`handled`)는 클릭이 2번 들어오면 1번만 처리한다는 뜻?"
+
+```text
+처음 그린 그림                       실제
+클릭 ×2 ─▶ handled ─▶ 1번만 처리      사용자 클릭 2번 = 이벤트 객체 2개 (E1 ≠ E2) → 둘 다 처리
+                                    
+                                    막는 것은 "클릭 1번(E1)이 리스너 두 곳에 도착"하는 경우뿐:
+                                      .mini-root     ← dispatch ②  같은 E1 → handled.has ✓ → return
+                                       └ .mini-portal ← dispatch ①  E1 처음 → 표시하고 처리
+                                          └ button   ← 클릭 1번
+```
+
+연타를 한 번으로 줄이는 건 **디바운스/스로틀**이라는 별개 기법이다.
+
+### ② "WeakSet은 데이터를 복사해서 넣는 거 아니야?"
+
+```text
+handled.add(native)      → native 객체를 가리키는 "약한 참조"를 넣음 (복사 아님)
+handled.has(native)      → "같은 객체인가"로 판정 (내용 비교 아님)
+
+const a = {x:1}, b = {x:1};   new WeakSet([a]).has(b)  → false
+```
+
+두 dispatch가 받는 게 **브라우저가 만든 같은 이벤트 객체 하나**라서 중복 판정이 된다. → [reference-vs-copy](reference-vs-copy.md)
+
 ## Set과 무엇이 다른가
 
 ```js

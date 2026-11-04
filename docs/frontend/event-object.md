@@ -2,6 +2,33 @@
 
 > **한 줄**: 리스너가 호출될 때 브라우저는 **이벤트 정보를 담은 객체**를 첫 번째 인자로 넣어 준다. 그 안의 `target`이 "어디서 일어났나", `currentTarget`이 "지금 누구의 리스너가 실행 중인가"다.
 
+## 이해의 흐름 — 헷갈렸던 지점에서 시작하기
+
+> 전체 Q&A: [03-internals-qa Q21](../learning/pr1/03-internals-qa.md)
+
+### "`native` 객체란? 그 `target`은 어떤 거야?"
+
+추상화(React 등)에 가려져 있어서 몰랐던 것: **리스너에는 브라우저가 만든 순수 객체가 그대로 들어온다.**
+
+```text
+사용자 클릭
+   │
+   ▼
+브라우저가 MouseEvent 객체를 만든다 ── { type:'click', target, currentTarget, clientX, … }
+   │
+   ▼  addEventListener로 등록한 함수를 "호출하면서 첫 인자로" 넣어 줌
+function dispatch(native) { … }        ← native는 우리가 붙인 이름 (보통 e, event)
+```
+
+```text
+<div class="mini-portal">   ← native.currentTarget  리스너가 달린 곳 (위임에서는 항상 컨테이너)
+  <div class="overlay">
+    <div class="modal">
+      <button>닫기</button>   ← native.target        실제로 클릭된 가장 안쪽 요소
+```
+
+**"어디서 클릭됐나"는 `target`으로만 안다.** 그래서 `nodeOf(native.target)`로 시작 노드를 찾는다. 이름을 `native`로 지은 건 우리가 감싸서 새로 만드는 이벤트 객체(합성 이벤트)와 구분하려고.
+
 ## 브라우저가 실제로 하는 일
 
 ```js

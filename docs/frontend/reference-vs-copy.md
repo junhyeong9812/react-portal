@@ -2,6 +2,36 @@
 
 > **한 줄**: JS에서 **원시값은 값 자체**가, **객체는 객체를 가리키는 참조**가 전달된다. 객체 내용은 저절로 복사되지 않는다. 복사는 `...`이나 `structuredClone()`처럼 **직접 요청할 때만** 일어나고, `...`은 겉껍데기만 새로 만드는 **얕은 복사**다.
 
+## 이해의 흐름 — 헷갈렸던 지점에서 시작하기
+
+> 전체 Q&A: [03-internals-qa Q22](../learning/pr1/03-internals-qa.md), [overflow — savedOverflow](overflow.md)
+
+### ① "클로저·WeakSet은 포인터가 아니라 모든 데이터를 그대로 복사해서 넣는 거 아니야?"
+
+```text
+처음 그린 그림                       실제
+close = () => portal.destroy()      close ──▶ portal 변수 ──▶ 노드 객체 (메모리에 하나뿐)
+  portal의 복사본을 들고 있음?                 닫기 버튼도 ────────┘
+                                    
+만약 복사였다면: 복사본을 destroy → 화면의 진짜 모달은 안 닫힘
+실제로 닫힌다 = 참조라는 증거
+```
+
+복사는 `{ ...on }`, `[...children]`처럼 **직접 요청할 때만**, 그것도 겉만(얕은 복사).
+
+### ② 반대로 — 원시값은 값이 복사된다 (`savedOverflow`)
+
+```text
+savedOverflow = body.style.overflow   'scroll' 문자열 "값"이 복사됨 (독립된 사본)
+body.style.overflow = 'hidden'        body만 바뀜
+savedOverflow                         여전히 'scroll'  ← 그래서 나중에 복원할 수 있다
+```
+
+| 담긴 것 | 변수에 들어 있는 것 | 이 프로젝트 |
+|---|---|---|
+| 객체 (노드·이벤트·요소) | 객체를 가리키는 참조 | 클로저의 `portal`, `handled.has(native)` |
+| 원시값 (문자열·숫자) | 값 자체 | `savedOverflow` |
+
 ## 원시값 vs 객체
 
 | 종류 | 예 | 변수에 들어 있는 것 |
