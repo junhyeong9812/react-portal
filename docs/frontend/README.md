@@ -7,6 +7,7 @@
 |------|------|----------------|
 | [dom-tree.md](dom-tree.md) | DOM은 JS 객체의 트리다. 만드는 것과 붙이는 것은 별개 | `node.js` createElement / appendChild |
 | [event-flow.md](event-flow.md) | 브라우저는 이벤트를 DOM 경로로 캡처 → 타깃 → 버블 순서로 흘린다 | 단계 1 (브라우저) |
+| [event-capture.md](event-capture.md) | 캡처는 탑다운으로 먼저, 버블은 바텀업으로 나중에. 캡처는 하위 stopPropagation에 안 막힘 | 모달 document 리스너 `true` |
 | [event-object.md](event-object.md) | 리스너에는 브라우저가 만든 Event 객체가 들어온다 | `dispatch(native)` |
 | [event-delegation.md](event-delegation.md) | 상위 하나가 받아서 나눠 준다. React의 이벤트 시스템 | `listen` + `dispatch` (단계 2) |
 | [component-tree-vs-dom.md](component-tree-vs-dom.md) | 프레임워크는 DOM과 별개의 논리 트리를 갖는다. Portal은 둘을 가른다 | `node.parent` vs `el.parentNode` |
@@ -20,7 +21,7 @@
 ## 읽는 순서 추천
 
 ```
-dom-tree → event-flow → event-object → event-delegation → component-tree-vs-dom
+dom-tree → event-flow → event-capture → event-object → event-delegation → component-tree-vs-dom
                                                                 ↓
                          reference-vs-copy ← closures ← weak-collections ← memory-and-cleanup ← containing-block ← stacking-context
 ```
