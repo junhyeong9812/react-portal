@@ -38,7 +38,7 @@ portal 컨테이너는 루트 DOM 밖에 있으므로 portal에도 따로 리스
 
 ```bash
 npm install
-npm run dev     # 데모: http://localhost:5173/
+npm run dev     # 데모: http://localhost:5173/  · React 비교: /react.html
 npm test        # Vitest + jsdom
 npm run build   # dist/
 ```
@@ -52,6 +52,10 @@ npm run build   # dist/
 5. 아래 모달 **닫기**: 위의 모달도 함께 정리됩니다(논리 자식이므로).
 6. **ESC**·어두운 배경 클릭으로 닫기, **Tab**이 모달 안에서만 순환, 닫으면 포커스가 열기 버튼으로 복귀합니다.
 7. 모달 안 **메뉴 열기 → 메뉴 항목**: 메뉴는 DOM상 모달 밖(body)에 있지만 눌러도 모달이 닫히지 않습니다(논리 트리 판정).
+
+### React 비교 페이지 (`/react.html`)
+
+같은 카드(`ThemeContext="dark"` + `onClick`)를 **진짜 portal(`createPortal`)** 과 **가짜 portal(`createRoot`로 별도 렌더)** 로 나란히 보여 줍니다. 두 콘텐츠 모두 DOM은 카드 밖에 있지만, 진짜는 `"dark"`를 읽고 클릭이 카드 `onClick`까지 올라가며, 가짜는 기본값 `"light"`를 읽고 클릭이 카드에 닿지 않습니다. 차이는 DOM이 아니라 React 트리에서 생깁니다. `react`·`react-dom`은 이 페이지와 테스트용 devDependency입니다.
 
 ## API
 
@@ -113,11 +117,14 @@ src/
   layers.js     z-index 레이어 스택
   modal.js      createModal — 바깥 클릭·ESC·포커스 가두기·스크롤 잠금
   index.js      공개 API
-test/           불변식별 테스트 (DOM 이동, 논리 버블링, stopPropagation, 생명주기, Context, 레이어, 모달)
+test/           불변식별 테스트 (DOM 이동, 논리 버블링, stopPropagation, 생명주기, Context, 레이어, 모달, React 비교)
 demo/, index.html   stacking context 함정 vs Portal 대조 데모
+demo/react/, react.html   React createPortal vs createRoot 비교 (JSX 없이 createElement)
+vite.config.js      멀티 페이지 빌드 (index.html + react.html)
 docs/
   learning/pr1/ 코드를 읽으며 정리한 학습 노트 (구조 요약, 개념, Q&A)
   learning/modal/ 모달 실무 기능 설계 노트
+  learning/react-compare/ 미니 Portal ↔ React 대응, 가짜 portal이 깨지는 이유
   frontend/     DOM·이벤트·CSS·메모리·클로저 등 주제별 동작 원리
   plans/        작업 명세와 기록
 ```
@@ -126,6 +133,7 @@ docs/
 
 - [PR #1 학습 노트](docs/learning/pr1/README.md): 코드 읽는 순서, 헷갈렸던 지점과 답
 - [모달 학습 노트](docs/learning/modal/README.md): 바깥 클릭을 논리 트리로 판정하는 이유, pointerdown·캡처, 포커스, 스크롤 참조 카운트
+- [React 비교 노트](docs/learning/react-compare/README.md): 미니 구현과 React의 대응표, createRoot 가짜 portal에서 Context·이벤트가 끊기는 이유
 - [프론트엔드 기초 주제 문서](docs/frontend/README.md): DOM 트리, 이벤트 흐름·위임, stacking context, containing block, GC, WeakSet, 클로저, 참조와 복사
 
 ## 범위와 한계

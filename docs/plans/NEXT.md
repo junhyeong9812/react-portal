@@ -2,15 +2,19 @@
 
 ## 기준
 
-- 마지막 갱신: 2026-11-03 · 직전 완료 작업: `docs/plans/2026-11-03/modal-features/` · 기준 커밋: feat/modal-features · 병합 상태: 대기
+- 마지막 갱신: 2026-11-04 · 직전 완료 작업: `docs/plans/2026-11-04/wrap-up/` · 기준: main (PR #1·#2·#3 머지) · 병합 상태: 프로젝트 마무리
 
 ## 다음 작업 후보 (우선순위순)
 
-### N1. React createPortal 비교 (가볍게) — 우선순위: 중간 · 명세 합의 완료 (`docs/plans/2026-11-03/react-compare/`)
+> 프로젝트는 사용자 판단으로 마무리. 아래는 다시 열 때의 후보(관측 신호 기반).
 
-- **왜 다음인가**: 미니 구현의 불변식을 React 실제 동작과 대조. `createRoot` 가짜 portal로 Context·이벤트 끊김 확인.
-- **발생 가능한 문제**: 미니 구현은 portal 컨테이너마다 리스너를 달고 `handled` WeakSet으로 중복을 막는다(`src/events.js`). React와 이벤트 순서·네이티브 stopPropagation 효과를 비교할 때 이 차이가 결과에 드러난다.
-- **착수 전 확인할 것**: Vite 8 멀티 페이지 설정 키(명세 A1).
+### N1. 모달 click-through 실브라우저 확인 — 우선순위: 낮음
+
+- **발생 가능한 문제**: 바깥 `pointerdown`으로 오버레이가 사라진 뒤 같은 클릭의 `click`이 뒤쪽 요소로 전달되는지 — jsdom으로 재현 불가, 미검증(modal-features log ⑥). 2026-11-04 사용자 확인 시 관통이 아니라 "맨 위부터 하나씩 닫힘"(정상)으로 정정됨. 확인 방법: 모달 1개만 연 상태에서 "Portal 모달 열기" 버튼이 있던 자리의 배경을 눌러 로그에 `── Portal 모달 열기`가 새로 찍히는지.
+
+### N2. 모달 Tab 순환에 논리 자손 portal 포함 — 우선순위: 낮음
+
+- **발생 가능한 문제**: `src/modal.js` `ponytail:` 주석 — dialog 안에서 연 메뉴(portal)의 포커스 요소가 Tab 순환에 없음(`docs/learning/modal/n3-tab-trap.md`).
 
 ## 보류·이월
 
@@ -18,6 +22,8 @@
 
 ## 완료 이력
 
-- 완료 → `docs/plans/2026-11-03/modal-features/` (PR 대기)
-- 완료 → `docs/plans/2026-11-03/readme/`
+- 완료 → `docs/plans/2026-11-04/wrap-up/` (PR #3 충돌 해소·머지)
+- 완료 → `docs/plans/2026-11-04/naive-modal-demo/` (PR #2 머지 f0f79f7)
+- 완료 → `docs/plans/2026-11-03/react-compare/` (PR #3)
+- 완료 → `docs/plans/2026-11-03/modal-features/` (PR #2 머지 f0f79f7)
 - 완료 → `docs/plans/2026-11-03/mini-portal/` (PR #1 머지 e059634)

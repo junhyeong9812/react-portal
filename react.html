@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Portal 비교</title>
+    <link rel="stylesheet" href="/demo/style.css" />
+    <link rel="stylesheet" href="/demo/react/style.css" />
+  </head>
+  <body>
+    <header class="topbar">React createPortal vs createRoot · <a href="/">← 미니 Portal 데모</a></header>
+    <div id="root"></div>
+    <section class="targets">
+      <div class="target">
+        <h2>body 영역 — 진짜 portal 출력</h2>
+        <div id="real-target"></div>
+      </div>
+      <div class="target">
+        <h2>body 영역 — 가짜 portal 출력</h2>
+        <div id="fake-target"></div>
+      </div>
+    </section>
+    <script type="module" src="/demo/react/main.js"></script>
+  </body>
+</html>
