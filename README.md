@@ -50,6 +50,8 @@ npm run build   # dist/
 3. 모달 안 **안쪽 버튼 클릭**: 로그가 `button → portal → card → root` 순서로 찍히지만, `#app`에 직접 단 네이티브 리스너 로그는 찍히지 않습니다. DOM은 옮겨졌고 논리 트리는 유지된다는 증거입니다.
 4. **모달 위에 또 열기**: z-index가 1000 → 1001로 쌓이고, 버블링은 `#2 → #1 → card → root`로 올라갑니다.
 5. 아래 모달 **닫기**: 위의 모달도 함께 정리됩니다(논리 자식이므로).
+6. **ESC**·어두운 배경 클릭으로 닫기, **Tab**이 모달 안에서만 순환, 닫으면 포커스가 열기 버튼으로 복귀합니다.
+7. 모달 안 **메뉴 열기 → 메뉴 항목**: 메뉴는 DOM상 모달 밖(body)에 있지만 눌러도 모달이 닫히지 않습니다(논리 트리 판정).
 
 ### React 비교 페이지 (`/react.html`)
 
@@ -74,6 +76,22 @@ button.inject('theme');                                        // 'dark' — por
 card.destroy();                                                // portal까지 연쇄 정리 (DOM·레이어·리스너)
 ```
 
+### 모달
+
+```js
+import { createModal } from './src/index.js';
+
+const modal = createModal(card, { label: '설정', onClose: (reason) => console.log(reason) });
+createNode(modal.dialog, 'h3', { text: '설정' });                // 콘텐츠는 dialog 아래에
+createNode(modal.dialog, 'button', { text: '닫기', on: { click: () => modal.close() } });
+```
+
+- **바깥 클릭**: DOM이 아니라 **논리 트리** 기준으로 판정 — 모달 안에서 연 드롭다운(portal)을 눌러도 닫히지 않음
+- **ESC**: 맨 위 모달만 닫힘
+- **포커스**: 열면 안으로 이동, Tab은 모달 안에서 순환, 닫으면 원래 요소로 복귀
+- **스크롤 잠금**: 모달이 하나라도 열려 있는 동안 `body` 스크롤 잠금(참조 카운트)
+- `onClose(reason)`: `'outside' | 'escape' | 'close' | 'destroy'`(논리 부모가 사라짐)
+
 | 함수 | 설명 |
 |---|---|
 | `createRoot(container)` | `container` 안에 루트 노드를 만들고 이벤트 위임 리스너를 단다 |
@@ -82,6 +100,8 @@ card.destroy();                                                // portal까지 �
 | `node.provide(key, value)` / `node.inject(key, fallback)` | 논리 트리 기준 Context |
 | `node.destroy()` | 논리 자식부터 재귀 정리 → 클린업 역순 실행 → DOM 제거 |
 | `getLayers()` | 열린 portal 컨테이너 목록(복사본) |
+| `createModal(parent, { target, onClose, initialFocus, label }?)` | `{ portal, overlay, dialog, close() }`. 바깥 클릭·ESC·포커스·스크롤 잠금 포함 |
+| `getOpenModals()` | 열린 모달 목록(복사본, 열린 순서) |
 
 핸들러가 받는 이벤트 객체는 `{ type, target, currentTarget, nativeEvent, stopPropagation(), preventDefault() }`이며, `target`·`currentTarget`은 DOM 요소가 아니라 **노드**입니다. `stopPropagation()`은 논리 버블링과 네이티브 버블링을 함께 멈춥니다.
 
@@ -95,13 +115,15 @@ src/
   events.js     이벤트 위임: listen(등록) + dispatch(논리 트리 배분)
   registry.js   DOM 요소 → 노드 매핑 (WeakMap)
   layers.js     z-index 레이어 스택
+  modal.js      createModal — 바깥 클릭·ESC·포커스 가두기·스크롤 잠금
   index.js      공개 API
-test/           불변식별 테스트 (DOM 이동, 논리 버블링, stopPropagation, 생명주기, Context, 레이어, React 비교)
+test/           불변식별 테스트 (DOM 이동, 논리 버블링, stopPropagation, 생명주기, Context, 레이어, 모달, React 비교)
 demo/, index.html   stacking context 함정 vs Portal 대조 데모
 demo/react/, react.html   React createPortal vs createRoot 비교 (JSX 없이 createElement)
 vite.config.js      멀티 페이지 빌드 (index.html + react.html)
 docs/
   learning/pr1/ 코드를 읽으며 정리한 학습 노트 (구조 요약, 개념, Q&A)
+  learning/modal/ 모달 실무 기능 설계 노트
   learning/react-compare/ 미니 Portal ↔ React 대응, 가짜 portal이 깨지는 이유
   frontend/     DOM·이벤트·CSS·메모리·클로저 등 주제별 동작 원리
   plans/        작업 명세와 기록
@@ -110,6 +132,7 @@ docs/
 ## 더 읽기
 
 - [PR #1 학습 노트](docs/learning/pr1/README.md): 코드 읽는 순서, 헷갈렸던 지점과 답
+- [모달 학습 노트](docs/learning/modal/README.md): 바깥 클릭을 논리 트리로 판정하는 이유, pointerdown·캡처, 포커스, 스크롤 참조 카운트
 - [React 비교 노트](docs/learning/react-compare/README.md): 미니 구현과 React의 대응표, createRoot 가짜 portal에서 Context·이벤트가 끊기는 이유
 - [프론트엔드 기초 주제 문서](docs/frontend/README.md): DOM 트리, 이벤트 흐름·위임, stacking context, containing block, GC, WeakSet, 클로저, 참조와 복사
 
