@@ -30,6 +30,7 @@
               window
 ```
 
+- 캡처 단계의 실행 순서·stopPropagation 실험: [event-capture.md](event-capture.md)
 - 기본 `addEventListener(type, fn)`은 **버블 단계**에서 호출된다. 우리가 흔히 말하는 "버블링"이 이것.
 - 각 단계에서 브라우저는 **그 요소에 등록된 리스너만** 호출한다. 리스너가 없는 요소는 그냥 지나친다.
 - 경로는 이벤트가 시작될 때 **DOM 구조로** 정해진다. 그래서 DOM상 다른 곳에 있는 요소(portal)는 경로가 완전히 다르다.
