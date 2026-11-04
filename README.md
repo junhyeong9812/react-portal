@@ -38,7 +38,7 @@ portal 컨테이너는 루트 DOM 밖에 있으므로 portal에도 따로 리스
 
 ```bash
 npm install
-npm run dev     # 데모: http://localhost:5173/
+npm run dev     # 데모: http://localhost:5173/  · React 비교: /react.html
 npm test        # Vitest + jsdom
 npm run build   # dist/
 ```
@@ -50,6 +50,10 @@ npm run build   # dist/
 3. 모달 안 **안쪽 버튼 클릭**: 로그가 `button → portal → card → root` 순서로 찍히지만, `#app`에 직접 단 네이티브 리스너 로그는 찍히지 않습니다. DOM은 옮겨졌고 논리 트리는 유지된다는 증거입니다.
 4. **모달 위에 또 열기**: z-index가 1000 → 1001로 쌓이고, 버블링은 `#2 → #1 → card → root`로 올라갑니다.
 5. 아래 모달 **닫기**: 위의 모달도 함께 정리됩니다(논리 자식이므로).
+
+### React 비교 페이지 (`/react.html`)
+
+같은 카드(`ThemeContext="dark"` + `onClick`)를 **진짜 portal(`createPortal`)** 과 **가짜 portal(`createRoot`로 별도 렌더)** 로 나란히 보여 줍니다. 두 콘텐츠 모두 DOM은 카드 밖에 있지만, 진짜는 `"dark"`를 읽고 클릭이 카드 `onClick`까지 올라가며, 가짜는 기본값 `"light"`를 읽고 클릭이 카드에 닿지 않습니다. 차이는 DOM이 아니라 React 트리에서 생깁니다. `react`·`react-dom`은 이 페이지와 테스트용 devDependency입니다.
 
 ## API
 
@@ -92,10 +96,13 @@ src/
   registry.js   DOM 요소 → 노드 매핑 (WeakMap)
   layers.js     z-index 레이어 스택
   index.js      공개 API
-test/           불변식별 테스트 (DOM 이동, 논리 버블링, stopPropagation, 생명주기, Context, 레이어)
+test/           불변식별 테스트 (DOM 이동, 논리 버블링, stopPropagation, 생명주기, Context, 레이어, React 비교)
 demo/, index.html   stacking context 함정 vs Portal 대조 데모
+demo/react/, react.html   React createPortal vs createRoot 비교 (JSX 없이 createElement)
+vite.config.js      멀티 페이지 빌드 (index.html + react.html)
 docs/
   learning/pr1/ 코드를 읽으며 정리한 학습 노트 (구조 요약, 개념, Q&A)
+  learning/react-compare/ 미니 Portal ↔ React 대응, 가짜 portal이 깨지는 이유
   frontend/     DOM·이벤트·CSS·메모리·클로저 등 주제별 동작 원리
   plans/        작업 명세와 기록
 ```
@@ -103,6 +110,7 @@ docs/
 ## 더 읽기
 
 - [PR #1 학습 노트](docs/learning/pr1/README.md): 코드 읽는 순서, 헷갈렸던 지점과 답
+- [React 비교 노트](docs/learning/react-compare/README.md): 미니 구현과 React의 대응표, createRoot 가짜 portal에서 Context·이벤트가 끊기는 이유
 - [프론트엔드 기초 주제 문서](docs/frontend/README.md): DOM 트리, 이벤트 흐름·위임, stacking context, containing block, GC, WeakSet, 클로저, 참조와 복사
 
 ## 범위와 한계
