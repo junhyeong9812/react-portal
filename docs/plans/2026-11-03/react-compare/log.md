@@ -23,3 +23,4 @@ export function RealPortal({ children, container }) {
 }
 ```
 - 남은 것: push·PR 확인 대기, PR #2와 README 충돌 해소.
+| 2026-11-04 | push + PR | PR #3 생성 |
